@@ -22,7 +22,7 @@ class GMM(object):
         self.threshod = threshod
 
     def init(self,image):
-        # 0表示w，1表示均值，2表示方差
+        # self.gaussian_para最后一维 0表示w，1表示均值，2表示方差
         self.gaussian_para = np.zeros(shape=(self.row, self.column, self.gaussian_number, 3))
         for i in range(image.shape[0]):
             for j  in range(image.shape[1]):
@@ -170,8 +170,6 @@ class GMM(object):
 
 
 if __name__ == "__main__":
-
-
     model = GMM(4,576,768)
     model.start(os.path.join(os.getcwd(), "Scene_Data"),0,110,200)
     # model.start_exist(os.path.join(os.getcwd(), "Scene_Data"),110,121)
