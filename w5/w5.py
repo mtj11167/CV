@@ -83,9 +83,9 @@ class GMM(object):
                 for k in range(self.gaussian_number):
                     self.gaussian_para[i,j,k,0] /= sum_gui
 
-    def get_fit_num(self,img):
-        for i in range(img.shape[0]):
-            for j in range(img.shape[1]):
+    def get_fit_num(self):
+        for i in range(self.row):
+            for j in range(self.column):
                 sum = 0
                 for k in range(self.gaussian_number):
                     sum+=self.gaussian_para[i,j,k,0]
@@ -113,7 +113,11 @@ class GMM(object):
     def start(self, path,train_start,train_end,test_end):
         for i in range(train_start,train_end):
             name = 0
-            if i < 100:
+            if i == 0:
+                name = "0000.jpg"
+            elif i > 0 and i<10:
+                name = "000"+str(i)+".jpg"
+            elif i >= 10 and i < 100:
                 name = "00"+str(i)+".jpg"
             else:
                 name = "0" + str(i) + ".jpg"
@@ -128,25 +132,27 @@ class GMM(object):
             # cv2.imshow("1", image_gray)
             # cv2.waitKey()
             end = time.time()
-            print("time", end - start)
-        np.save("./guapara.npy",self.gaussian_para)
-
-        for j in range(train_end,test_end):
+            print(i," time", end - start)
+        self.get_fit_num()
+        np.save("./guapara_sigma"+str(self.sigma)+"_alpha"+str(self.alpha)+".npy",self.gaussian_para)
+        for j in range(train_start,test_end):
             name = 0
-            if j < 100:
+            if j == 0:
+                name = "0000.jpg"
+            elif j > 0 and j < 10:
+                name = "000" + str(j) + ".jpg"
+            elif j >= 10 and j < 100:
                 name = "00" + str(j) + ".jpg"
             else:
                 name = "0" + str(j) + ".jpg"
             image = cv2.imread(os.path.join(path, name))
             image_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-
-            if j == train_end:
-                self.get_fit_num(image_gray)
             img_show = self.gmm_test(image_gray)
             cv2.imwrite("./mydata/" + name, img_show)
 
     def start_exist(self,path,train_end,test_end):
         self.gaussian_para = np.load("./guapara.npy")
+        self.get_fit_num()
         for j in range(train_end,test_end):
             name = 0
             if j < 100:
@@ -155,31 +161,17 @@ class GMM(object):
                 name = "0" + str(j) + ".jpg"
             image = cv2.imread(os.path.join(path, name))
             image_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            # plt.imshow(image_gray)
-            # plt.show()
-            # cv2.imshow("1", image_gray)
-            # cv2.setMouseCallback("1", on_EVENT_LBUTTONDOWN(img=image_gray))
-            # cv2.waitKey()
-            if j == train_end:
-                self.get_fit_num(image_gray)
+
+            a = time.time()
             img_show = self.gmm_test(image_gray)
+            b= time.time()
+            print("time:",b-a)
             cv2.imwrite("./mydata/" + name, img_show)
 
 
 if __name__ == "__main__":
-    # a = np.zeros(shape=(3,3))
-    # a[1,:] = 2
-    # print(gaussian(0,0,1))
-    # print(a)
-    # a = np.zeros(shape=(50,50))
-    # for i in range(15):
-    #     for j in range(15):
-    #         a[i,j] = 255
-    # cv2.imwrite("./mydata/" + "file.jpg", a)
-    # cv2.imshow("1",a)
-    # cv2.waitKey()
 
 
     model = GMM(4,576,768)
-    # model.start(os.path.join(os.getcwd(), "Scene_Data"),90,110,121)
-    model.start_exist(os.path.join(os.getcwd(), "Scene_Data"),110,121)
+    model.start(os.path.join(os.getcwd(), "Scene_Data"),0,110,200)
+    # model.start_exist(os.path.join(os.getcwd(), "Scene_Data"),110,121)
