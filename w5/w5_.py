@@ -2,7 +2,7 @@ import cv2
 import os
 
 def get_vedio():
-    video_dir = './result.avi'  # 视频存储路径及视频名
+    video_dir = './result1.avi'  # 视频存储路径及视频名
     fps = 30  # 帧率一般选择20-30
     num = 201  # 图片数+1，因为后面的循环是从1开始
     img_size = (768,576)  # 图片尺寸，若和图片本身尺寸不匹配，输出视频是空的
